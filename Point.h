@@ -27,6 +27,13 @@ namespace rb {
 		}
 		friend ostream& operator<<(ostream&, const Point&);
 
+		inline float X() { return x_; }
+		inline float Y() { return y_; }
+		inline float Z() { return z_; }
+		inline float RX() { return rx_; }
+		inline float RY() { return ry_; }
+		inline float RZ() { return rz_; }
+
 
 		virtual ~Point() ;
 
@@ -41,7 +48,7 @@ namespace rb {
 
 	ostream& operator<<(ostream& os, const Point& p)
 	{
-		os << "pnt"<<'[' << p.x_ << ", " << p.y_ << ", " << p.z_ << ", " << p.rx_ << ", " << p.ry_ << ", " << p.rz_ << ']' << endl;
+		os << "pnt:"<<'[' << p.x_ << ", " << p.y_ << ", " << p.z_ << ", " << p.rx_ << ", " << p.ry_ << ", " << p.rz_ << ']' << endl;
 		return os;
 	}
 }

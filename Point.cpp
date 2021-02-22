@@ -14,8 +14,6 @@ Point::Point(float x, float y, float z, float rx, float ry, float rz) {
 	rx_ = rx;
 	ry_ = ry;
 	rz_ = rz;
-	cout << "x: " << x << endl;
-	cout << "rz: " << rz << endl;
 }
 
 Point::~Point() {

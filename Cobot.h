@@ -9,6 +9,8 @@
 #endif
 
 #include "CommonHeader.h"
+//#include "Point.h"
+
 using namespace std;
 
 // Thread
@@ -34,6 +36,9 @@ namespace rb {
 
 		void CobotInit();
 		void SetProgramMode(PG_MODE mode);
+		//void MoveL(float x, float y, float z, float rx, float ry, float rz, float spd, float acc);
+		void MoveL(float x, float y, float z, float rx, float ry, float rz, float spd, float acc);
+		//void MoveL(Point p, float spd, float acc);
 		//void ProgramMode_Real();
 	private:
 		string ip_address_;

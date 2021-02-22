@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Cobot.h"
 #include <Ws2tcpip.h>
+#include <iomanip>
 using namespace rb;
 
 #define PACKET_SIZE 4000
@@ -70,6 +71,35 @@ void Cobot::SetProgramMode(PG_MODE mode) {
 		}
 	}
 }
+
+void Cobot::MoveL(float x, float y, float z, float rx, float ry, float rz, float spd, float acc) {
+	std::stringstream oss;
+	oss << setprecision(3);
+	oss << "movetcp " << x << ", " << y << ", " << z << ", " << rx << ", " << ry << ", " << rz;
+	string msg = oss.str();
+	moveCmdFlag = true;
+	cmdConfirmFlag = false;
+	if (!WSAGetLastError()) {
+		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		cout << msg << endl;
+	}
+	systemStat.sdata.robot_state = 3; //run	
+}
+//
+//void Cobot::MoveL(Point p, float spd, float acc) {
+//	std::stringstream oss;
+//	oss << setprecision(3);
+//	oss << "movetcp " << p.X() << ", " << p.Y() << ", " << p.Z() << ", " << p.RX() << ", " << p.RY() << ", " << p.RZ();
+//	string msg = oss.str();
+//	moveCmdFlag = true;
+//	cmdConfirmFlag = false;
+//	if (!WSAGetLastError()) {
+//		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+//		cout << msg << endl;
+//	}
+//	systemStat.sdata.robot_state = 3; //run	
+//}
+
 //
 //void Cobot::MoveJoint(float joint1, float joint2, float joint3, float joint4, float joint5, float joint6, float spd, float acc) {
 //	QString text;
