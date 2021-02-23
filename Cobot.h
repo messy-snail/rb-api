@@ -9,7 +9,8 @@
 #endif
 
 #include "CommonHeader.h"
-//#include "Point.h"
+#include "Point.h"
+#include "Joint.h"
 
 using namespace std;
 
@@ -36,18 +37,37 @@ namespace rb {
 
 		void CobotInit();
 		void SetProgramMode(PG_MODE mode);
-		//void MoveL(float x, float y, float z, float rx, float ry, float rz, float spd, float acc);
+
+		const Point GetCurrentPoint();
+		
+		void MoveL(Point p, float spd, float acc);
 		void MoveL(float x, float y, float z, float rx, float ry, float rz, float spd, float acc);
-		//void MoveL(Point p, float spd, float acc);
+		
+		void MoveJ(Joint j, float spd, float acc);
+		void MoveJ(float j0, float j1, float j2, float j3, float j4, float j5, float spd, float acc);
+
+		void MoveJB_Clear();
+		void MoveJB_Add(Joint j, float spd, float acc);
+		void MoveJB_Add(float j0, float j1, float j2, float j3, float j4, float j5, float spd, float acc);
+		void MoveJB_Run();		
+
 		//void ProgramMode_Real();
+		void ReadCmd();
+		void ReadData();
 	private:
-		string ip_address_;
 		bool isValidIP(string ip);
 		bool isMotionIdle();
+
 		bool socketCmdCom(string ip);
 		bool socketCmdClose();
-		void readyCmdCom();
 
+		bool socketDataCom(string ip);
+		bool socketDataClose();
+
+		Point current_point_;
+		Joint current_joint_;
+
+		string ip_address_;
 		systemSTAT systemStat;
 		systemCONFIG systemConfig;
 		systemPOPUP  systemPopup;
@@ -56,14 +76,15 @@ namespace rb {
 		bool cmdConfirmFlag = false;
 		bool moveCmdFlag = false;
 		int moveCmdCnt = 0;
+
 		int CMD_CLIENT_FD_ = 0;
+		int DATA_CLIENT_FD_ = 0;
 
-		struct sockaddr_in  ClientAddr;
+		struct sockaddr_in  cmd_addr_;
+		struct sockaddr_in  data_addr_;
 
+		vector<unsigned char> recv_buf_;
 	};
-	/*extern "C" {
-		CONTROL_DECLSPEC void PrintTest();
-	}*/
 }
 
 

@@ -6,9 +6,8 @@ using namespace rb;
 
 #define PACKET_SIZE 4000
 
-//SOCKET data_sock_;
-//SOCKET cmd_sock_;
-thread proc;
+
+
 Cobot::Cobot() {
 	memset(&systemStat, 0, sizeof(systemSTAT));
 	systemStat.sdata.program_mode = -1;
@@ -16,11 +15,33 @@ Cobot::Cobot() {
 }
 
 Cobot::~Cobot() {
-	//closesocket(cmd_sock_);
-	proc.join();
 	socketCmdClose();
-	
+	socketDataClose();	
 }
+
+//bool Cobot::ConnectToCB(string ip) {
+//	bool ret = isValidIP(ip);
+//	if (ret) {
+//		//deep copy
+//		ip_address_ = ip;
+//		cout << ip_address_ << endl;
+//		if (socketCmdCom(ip_address_)) {
+//			proc = thread(&Cobot::readyCmdCom, this);	
+//			//SetTimer(NULL, 1, 50, readyCmdCom);
+//		}	
+//		//char msg[PACKET_SIZE] = { 0 };
+//		//while (!WSAGetLastError()) {
+//		//	if (bSend_) {
+//		//		send(CMD_CLIENT_FD_, sending_msg_.c_str(), sending_msg_.length(), 0);
+//		//		bSend_ = false;
+//		//	}
+//		//}
+//		SetProgramMode(PG_MODE::REAL);
+//		proc.join();
+//		return true;
+//	}
+//	return false;
+//}
 
 bool Cobot::ConnectToCB(string ip) {
 	bool ret = isValidIP(ip);
@@ -28,13 +49,7 @@ bool Cobot::ConnectToCB(string ip) {
 		//deep copy
 		ip_address_ = ip;
 		cout << ip_address_ << endl;
-		if (socketCmdCom(ip_address_)) {
-			proc = thread(&Cobot::readyCmdCom, this);
-		}
-		
-		//proc.join();
-		
-		return true;
+		return socketCmdCom(ip_address_) && socketDataCom(ip_address_);
 	}
 	return false;
 }
@@ -44,12 +59,19 @@ string Cobot::Version() {
 	return __RB_VERSION__;
 }
 
+const Point Cobot::GetCurrentPoint() {
+	//current_point_ = Point(systemStat.sdata.jnt_ang[0], systemStat.sdata.jnt_ang[0], systemStat.sdata.jnt_ang[0], systemStat.sdata.jnt_ang[0], systemStat.sdata.jnt_ang[0], systemStat.sdata.jnt_ang[0]);
+	Point p1(5, 5, 5, 5, 5, 5);
+	current_point_(p1);
+	return current_point_;
+}
+
 void Cobot::CobotInit() {
 	string msg = "mc jall init";
-	cout << msg << endl;
 	cmdConfirmFlag = false;
 	if (!WSAGetLastError()) {
 		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		cout << msg << endl;
 	}
 }
 
@@ -72,10 +94,10 @@ void Cobot::SetProgramMode(PG_MODE mode) {
 	}
 }
 
-void Cobot::MoveL(float x, float y, float z, float rx, float ry, float rz, float spd, float acc) {
+void Cobot::MoveL(Point p, float spd, float acc) {
 	std::stringstream oss;
 	oss << setprecision(3);
-	oss << "movetcp " << x << ", " << y << ", " << z << ", " << rx << ", " << ry << ", " << rz;
+	oss << "movetcp " << spd << ", " << acc << ", " << p.X() << ", " << p.Y() << ", " << p.Z() << ", " << p.RX() << ", " << p.RY() << ", " << p.RZ();
 	string msg = oss.str();
 	moveCmdFlag = true;
 	cmdConfirmFlag = false;
@@ -85,38 +107,119 @@ void Cobot::MoveL(float x, float y, float z, float rx, float ry, float rz, float
 	}
 	systemStat.sdata.robot_state = 3; //run	
 }
-//
-//void Cobot::MoveL(Point p, float spd, float acc) {
-//	std::stringstream oss;
-//	oss << setprecision(3);
-//	oss << "movetcp " << p.X() << ", " << p.Y() << ", " << p.Z() << ", " << p.RX() << ", " << p.RY() << ", " << p.RZ();
-//	string msg = oss.str();
+
+void Cobot::MoveL(float x, float y, float z, float rx, float ry, float rz, float spd, float acc) {
+	std::stringstream oss;
+	oss << setprecision(3);
+	oss << "movetcp " << spd << ", " << acc << ", " << x << ", " << y << ", " << z << ", " << rx << ", " << ry << ", " << rz;
+	string msg = oss.str();
+	moveCmdFlag = true;
+	cmdConfirmFlag = false;
+	if (!WSAGetLastError()) {
+		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		cout << msg << endl;
+	}
+	systemStat.sdata.robot_state = 3; //run	
+}
+
+
+void Cobot::MoveJ(Joint j, float spd, float acc) {
+	std::stringstream oss;
+	oss << setprecision(3);
+	oss << "jointall " << spd << ", " << acc << ", " << j.J0() << ", " << j.J1() << ", " << j.J2() << ", " << j.J3() << ", " << j.J4() << ", " << j.J5();
+	string msg = oss.str();
+	moveCmdFlag = true;
+	cmdConfirmFlag = false;
+	if (!WSAGetLastError()) {
+		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		cout << msg << endl;
+	}
+	systemStat.sdata.robot_state = 3; //run
+}
+
+void Cobot::MoveJ(float j0, float j1, float j2, float j3, float j4, float j5, float spd, float acc) {
+	std::stringstream oss;
+	oss << setprecision(3);
+	oss << "jointall " << spd << ", " << acc << ", " << j0 << ", " << j1 << ", " << j2 << ", " << j3 << ", " << j4 << ", " << j5;
+	string msg = oss.str();
+	moveCmdFlag = true;
+	cmdConfirmFlag = false;
+	if (!WSAGetLastError()) {
+		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		cout << msg << endl;
+	}
+	systemStat.sdata.robot_state = 3; //run
+}
+
+void Cobot::MoveJB_Clear() {
+	string msg = "blend_jnt clear_pt";
+	cmdConfirmFlag = false;
+	if (!WSAGetLastError()) {
+		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		cout << msg << endl;
+	}
+}
+void Cobot::MoveJB_Add(float j0, float j1, float j2, float j3, float j4, float j5, float spd, float acc) {
+	std::stringstream oss;
+	oss << setprecision(3);
+	oss << "blend_jnt add_pt " << spd << ", " << acc << ", " << j0 << ", " << j1 << ", " << j2 << ", " << j3 << ", " << j4 << ", " << j5;
+	string msg = oss.str();
+	cmdConfirmFlag = false;
+	if (!WSAGetLastError()) {
+		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		cout << msg << endl;
+	}
+	systemStat.sdata.robot_state = 3; //run
+}
+
+void Cobot::MoveJB_Add(Joint j, float spd, float acc) {
+	std::stringstream oss;
+	oss << setprecision(3);
+	oss << "blend_jnt add_pt " << spd << ", " << acc << ", " << j.J0() << ", " << j.J1() << ", " << j.J2() << ", " << j.J3() << ", " << j.J4() << ", " << j.J5();
+	string msg = oss.str();
+	cmdConfirmFlag = false;
+	if (!WSAGetLastError()) {
+		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		cout << msg << endl;
+	}
+	systemStat.sdata.robot_state = 3; //run
+}
+
+void Cobot::MoveJB_Run() {
+	string msg = "blend_jnt move_pt";
+	moveCmdFlag = true;
+	cmdConfirmFlag = false;
+	if (!WSAGetLastError()) {
+		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		cout << msg << endl;
+	}
+	systemStat.sdata.robot_state = 3;
+}
+
+
+//void Cobot::MoveTCPBlend_Clear() {
+//	QString text;
+//	text.sprintf("blend_tcp clear_pt");
+//	cmdConfirmFlag = false;
+//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
+//}
+//void Cobot::MoveTCPBlend_AddPoint(float radius, float x, float y, float z, float rx, float ry, float rz, float spd, float acc) {
+//	QString text;
+//	text.sprintf("blend_tcp add_pt %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", spd, acc, radius, x, y, z, rx, ry, rz);
+//	cmdConfirmFlag = false;
+//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
+//	systemStat.sdata.robot_state = 3; //run
+//}
+//void Cobot::MoveTCPBlend_MovePoint() {
+//	QString text;
+//	text.sprintf("blend_tcp move_pt");
 //	moveCmdFlag = true;
 //	cmdConfirmFlag = false;
-//	if (!WSAGetLastError()) {
-//		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
-//		cout << msg << endl;
-//	}
-//	systemStat.sdata.robot_state = 3; //run	
+//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
+//	systemStat.sdata.robot_state = 3;
 //}
 
 //
-//void Cobot::MoveJoint(float joint1, float joint2, float joint3, float joint4, float joint5, float joint6, float spd, float acc) {
-//	QString text;
-//	text.sprintf("jointall %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", spd, acc, joint1, joint2, joint3, joint4, joint5, joint6);
-//	moveCmdFlag = true;
-//	cmdConfirmFlag = false;
-//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
-//	systemStat.sdata.robot_state = 3; //run
-//}
-//void Cobot::MoveTCP(float x, float y, float z, float rx, float ry, float rz, float spd, float acc) {
-//	QString text;
-//	text.sprintf("movetcp %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", spd, acc, x, y, z, rx, ry, rz);
-//	moveCmdFlag = true;
-//	cmdConfirmFlag = false;
-//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
-//	systemStat.sdata.robot_state = 3; //run
-//}
 //void Cobot::MoveCircle_ThreePoint(int type, float x1, float y1, float z1, float rx1, float ry1, float rz1, float x2, float y2, float z2, float rx2, float ry2, float rz2, float spd, float acc) {
 //	QString text;
 //	char buf[15];
@@ -155,48 +258,7 @@ void Cobot::MoveL(float x, float y, float z, float rx, float ry, float rz, float
 //	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
 //	systemStat.sdata.robot_state = 3;
 //}
-//void Cobot::MoveJointBlend_Clear() {
-//	QString text;
-//	text.sprintf("blend_jnt clear_pt");
-//	cmdConfirmFlag = false;
-//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
-//}
-//void Cobot::MoveJointBlend_AddPoint(float joint1, float joint2, float joint3, float joint4, float joint5, float joint6, float spd, float acc) {
-//	QString text;
-//	text.sprintf("blend_jnt add_pt %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", spd, acc, joint1, joint2, joint3, joint4, joint5, joint6);
-//	cmdConfirmFlag = false;
-//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
-//	systemStat.sdata.robot_state = 3; //run
-//}
-//void Cobot::MoveJointBlend_MovePoint() {
-//	QString text;
-//	text.sprintf("blend_jnt move_pt");
-//	moveCmdFlag = true;
-//	cmdConfirmFlag = false;
-//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
-//	systemStat.sdata.robot_state = 3;
-//}
-//void Cobot::MoveTCPBlend_Clear() {
-//	QString text;
-//	text.sprintf("blend_tcp clear_pt");
-//	cmdConfirmFlag = false;
-//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
-//}
-//void Cobot::MoveTCPBlend_AddPoint(float radius, float x, float y, float z, float rx, float ry, float rz, float spd, float acc) {
-//	QString text;
-//	text.sprintf("blend_tcp add_pt %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", spd, acc, radius, x, y, z, rx, ry, rz);
-//	cmdConfirmFlag = false;
-//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
-//	systemStat.sdata.robot_state = 3; //run
-//}
-//void Cobot::MoveTCPBlend_MovePoint() {
-//	QString text;
-//	text.sprintf("blend_tcp move_pt");
-//	moveCmdFlag = true;
-//	cmdConfirmFlag = false;
-//	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
-//	systemStat.sdata.robot_state = 3;
-//}
+
 //void Cobot::ControlBoxDigitalOut(int d0, int d1, int d2, int d3, int d4, int d5, int d6, int d7, int d8, int d9, int d10, int d11, int d12, int d13, int d14, int d15) {
 //	QString text;
 //	text.sprintf("digital_out %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d", d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15);
@@ -261,43 +323,64 @@ void Cobot::MoveL(float x, float y, float z, float rx, float ry, float rz, float
 //	cmdConfirmFlag = false;
 //	cmdSocket.write(text.toStdString().c_str(), text.toStdString().length());
 //}
-//void data_recv() {
+
+
+//void Cobot::ReadCmd() {
 //	char buffer[PACKET_SIZE] = {}; //char 생성
 //	string cmd; //string 생성
+//	cout << "WSAGetLastError(): " << WSAGetLastError() << endl;
 //	while (!WSAGetLastError()) {
 //		ZeroMemory(&buffer, PACKET_SIZE); //buffer 비우기
-//		recv(data_sock_, buffer, PACKET_SIZE, 0); //데이터받아오기
+//		//ioctlsocket()
+//		recv(CMD_CLIENT_FD_, buffer, PACKET_SIZE, 0); //데이터받아오기
 //		cmd = buffer; //buffer의값이 cmd에 들어갑니다
-//		//if (cmd == "hi") break; //cmd의값이 "exit"일경우 데이터받아오기'만' 종료
-//		cout << "데이터 받은 메세지: " << buffer << endl;
-//	}
+//		cout << "[cmd]" << cmd << endl;
+//		if (cmd.compare("The command was executed\n") == 0) {
+//			cmdConfirmFlag = true;
+//			if (moveCmdFlag == true) {
+//				moveCmdCnt = 4;
+//				systemStat.sdata.robot_state = 3;
+//				moveCmdFlag = false;
+//			}
+//			cout << "moveCmdFlag: " << boolalpha << moveCmdFlag << endl;
+//		}
+//	}	
+//	cout << "WSAGetLastError(): " << WSAGetLastError() << endl;	
 //}
 
-
-void Cobot::readyCmdCom() {
-	char buffer[PACKET_SIZE] = {}; //char 생성
-	string cmd; //string 생성
+void Cobot::ReadCmd() {
+	std::vector<char> buffer(PACKET_SIZE);
 	cout << "WSAGetLastError(): " << WSAGetLastError() << endl;
 	while (!WSAGetLastError()) {
-		ZeroMemory(&buffer, PACKET_SIZE); //buffer 비우기
-		//ioctlsocket()
-		recv(CMD_CLIENT_FD_, buffer, PACKET_SIZE, 0); //데이터받아오기
-		cmd = buffer; //buffer의값이 cmd에 들어갑니다
-		//if (cmd == "hi") break; //cmd의값이 "exit"일경우 데이터받아오기'만' 종료
-		cout << "커맨드 받은 메세지: " << cmd << endl;
+		int result = recv(CMD_CLIENT_FD_, buffer.data(), buffer.size(), 0);
+		if (result != -1) {
+			buffer.resize(result);
+		}
+		else {
+			// Handle error
+		}
+		//string 생성
+		string cmd(buffer.begin(), buffer.end());
+		
+		cout << "[cmd]" << cmd << endl;
 		if (cmd.compare("The command was executed\n") == 0) {
 			cmdConfirmFlag = true;
 			if (moveCmdFlag == true) {
 				moveCmdCnt = 4;
 				systemStat.sdata.robot_state = 3;
 				moveCmdFlag = false;
-			}
+			}	
 		}
-	}	
-	socketCmdClose();
+		cout << "moveCmdFlag: " << boolalpha << moveCmdFlag << endl;
+	}
 	cout << "WSAGetLastError(): " << WSAGetLastError() << endl;
-	
 }
+
+
+void Cobot::ReadData() {
+
+}
+
 bool Cobot::isValidIP(string ip) {
 	stringstream ss(ip);
 	string item;
@@ -306,11 +389,11 @@ bool Cobot::isValidIP(string ip) {
 	while (getline(ss, item, '.')) {
 		int number = stoi(item);
 		if (number < 0) {
-			throw "Error: negative value";
+			throw "[Error] Valid range 0~255";
 			return false;
 		}
 		else if (number > 255) {
-			throw "Error: 255";
+			throw "[Error] Valid range 0~255";
 			return false;
 		}
 		iter++;
@@ -320,7 +403,7 @@ bool Cobot::isValidIP(string ip) {
 		return true;
 	}
 	else {
-		throw "Error: 4";
+		throw "[Error] 4 elements";
 		return false;
 	}
 
@@ -329,8 +412,6 @@ bool Cobot::isValidIP(string ip) {
 bool Cobot::isMotionIdle() {
 	return ((cmdConfirmFlag == true) && (systemStat.sdata.robot_state == 1));
 }
-
-
 
 
 bool Cobot::socketCmdCom(string ip) {
@@ -342,14 +423,14 @@ bool Cobot::socketCmdCom(string ip) {
 	}
 	//data_sock_ = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	CMD_CLIENT_FD_ = socket(AF_INET, SOCK_STREAM, 0);
-	cout << "createSocket : " << CMD_CLIENT_FD_ << endl;
+	cout << "Command socket : " << CMD_CLIENT_FD_ << endl;
 	if (CMD_CLIENT_FD_ == -1) {
 		//exception
 	}
-	inet_pton(AF_INET, ip.c_str(), &ClientAddr.sin_addr.s_addr);
+	inet_pton(AF_INET, ip.c_str(), &cmd_addr_.sin_addr.s_addr);
 
-	ClientAddr.sin_family = AF_INET;
-	ClientAddr.sin_port = htons(CMD_PORT);
+	cmd_addr_.sin_family = AF_INET;
+	cmd_addr_.sin_port = htons(CMD_PORT);
 
 	int optval = 1;
 	const char optval2 = (const char)optval;
@@ -358,21 +439,62 @@ bool Cobot::socketCmdCom(string ip) {
 	//setsockopt(LAN_CLIENT_FD, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
 	setsockopt(CMD_CLIENT_FD_, IPPROTO_TCP, TCP_NODELAY, &optval2, sizeof(optval));
 
-	if (connect(CMD_CLIENT_FD_, (struct sockaddr*)&ClientAddr, sizeof(ClientAddr)) < 0){
-		cout << "connect : " << CMD_CLIENT_FD_ << endl;
+	if (connect(CMD_CLIENT_FD_, (struct sockaddr*)&cmd_addr_, sizeof(cmd_addr_)) < 0){
+		cout << "CMD connect : " << CMD_CLIENT_FD_ << endl;
 		cout << "Connect2Server return false" << endl;
 		return false;
 	}
-	cout << "Client connect to server..!!" << endl;
+	cout << "Cmd client connect to server..!!" << endl;
 
 	unsigned long arg = 1;
-	
-	return ioctlsocket(CMD_CLIENT_FD_, FIONBIO, &arg) == 0;
+	return true;
+	//return ioctlsocket(CMD_CLIENT_FD_, FIONBIO, &arg) == 0;
 }
+
 
 bool Cobot::socketCmdClose() {
 	WSACleanup();
 	return closesocket(CMD_CLIENT_FD_);
 }
 
+bool Cobot::socketDataCom(string ip) {
+	WSADATA wsa;
+	//2.2 version
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+		cout << "Failed. Error code: %d\n\n" << WSAGetLastError() << endl;
+		exit(1);
+	}
+	//data_sock_ = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	DATA_CLIENT_FD_ = socket(AF_INET, SOCK_STREAM, 0);
+	cout << "Data socket : " << DATA_CLIENT_FD_ << endl;
+	if (DATA_CLIENT_FD_ == -1) {
+		//exception
+	}
+	inet_pton(AF_INET, ip.c_str(), &data_addr_.sin_addr.s_addr);
+
+	data_addr_.sin_family = AF_INET;
+	data_addr_.sin_port = htons(DATA_PORT);
+
+	int optval = 1;
+	const char optval2 = (const char)optval;
+
+	setsockopt(DATA_CLIENT_FD_, SOL_SOCKET, SO_REUSEADDR, &optval2, sizeof(optval));
+	//setsockopt(LAN_CLIENT_FD, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+	setsockopt(DATA_CLIENT_FD_, IPPROTO_TCP, TCP_NODELAY, &optval2, sizeof(optval));
+
+	if (connect(DATA_CLIENT_FD_, (struct sockaddr*)&data_addr_, sizeof(data_addr_)) < 0) {
+		cout << "Data connect : " << DATA_CLIENT_FD_ << endl;
+		cout << "Connect2Server return false" << endl;
+		return false;
+	}
+	cout << "Data client connect to server..!!" << endl;
+
+	unsigned long arg = 1;
+	return true;
+}
+
+bool Cobot::socketDataClose() {
+	WSACleanup();
+	return closesocket(DATA_CLIENT_FD_);
+}
 
