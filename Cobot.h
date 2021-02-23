@@ -46,7 +46,7 @@ namespace rb {
 	public:
 		Cobot();
 		virtual ~Cobot();
-		bool ConnectToCB(string ip);
+		bool ConnectToCB(string ip="10.0.2.7");
 		string __Version();
 
 		bool CobotInit();

@@ -46,12 +46,20 @@ Cobot::~Cobot() {
 //}
 
 bool Cobot::ConnectToCB(string ip) {
-	bool ret = isValidIP(ip);
-	if (ret) {
+	if (isValidIP(ip)) {
 		//deep copy
 		ip_address_ = ip;
 		cout << ip_address_ << endl;
-		return socketCmdCom(ip_address_) && socketDataCom(ip_address_);
+		bool cmd_success = socketCmdCom(ip_address_);
+		bool data_success = socketDataCom(ip_address_);
+		if (cmd_success&& data_success) {
+			RunThread();
+			return true;
+		}
+		else {
+			return false;
+		}
+		//return socketCmdCom(ip_address_) && socketDataCom(ip_address_);
 	}
 	return false;
 }
