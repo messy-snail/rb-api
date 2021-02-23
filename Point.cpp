@@ -13,15 +13,15 @@ Point::Point(const float x, const float y, const float z, const float rx, const 
 	rz_ = rz;
 }
 
-Point Point::operator + (Point& p) {
-	x_ = x_ + p.x_;
-	y_ = y_ + p.y_;
-	z_ = z_ + p.z_;
-	rx_ = rx_ + p.rx_;
-	ry_ = ry_ + p.ry_;
-	rz_ = rz_ + p.rz_;
-	return Point(x_, y_, z_, rx_, ry_, rz_);
-}
+//Point Point::operator + (Point& p) {
+//	x_ = x_ + p.x_;
+//	y_ = y_ + p.y_;
+//	z_ = z_ + p.z_;
+//	rx_ = rx_ + p.rx_;
+//	ry_ = ry_ + p.ry_;
+//	rz_ = rz_ + p.rz_;
+//	return Point(x_, y_, z_, rx_, ry_, rz_);
+//}
 
 
 void Point::operator () (Point p) {

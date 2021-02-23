@@ -25,7 +25,7 @@ namespace rb {
 	public:
 		Point() {}
 		Point(const float x, const float y, const float z, const float rx, const float ry, const float rz);
-		Point operator + (Point& p);
+		//Point operator + (Point& p);
 		void operator () (const Point p);
 		void operator () (const float x, const float y, const float z, const float rx, const float ry, const float rz);
 		friend ostream& operator << (ostream& os, rb::Point p) {
