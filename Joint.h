@@ -23,8 +23,8 @@ namespace rb {
 	public:
 		Joint() {}
 		Joint(const float j0, const float j1, const float j2, const float j3, const float j4, const float j5);
-		Joint operator + (Joint& j);
-		Joint operator - (Joint& j);
+		Joint operator + (const Joint& j);
+		Joint operator - (const Joint& j);
 		friend ostream& operator << (ostream& os, rb::Joint j) {
 			os << "jnt:" << '[' << j.J0() << ", " << j.J1() << ", " << j.J2() << ", " << j.J3() << ", " << j.J4() << ", " << j.J5() << ']';
 			return os;

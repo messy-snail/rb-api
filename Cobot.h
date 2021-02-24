@@ -52,8 +52,11 @@ namespace rb {
 		bool CobotInit();
 		bool SetProgramMode(PG_MODE mode);
 
-		const Joint GetCurrentJoint();
-		const Point GetCurrentTCP();
+		Joint GetCurrentJoint();
+		tuple<float, float, float, float, float, float> GetCurrentSplitedJoint();
+
+		Point GetCurrentTCP();
+		tuple<float, float, float, float, float, float> GetCurrentSplitedTCP();
 		
 		bool MoveL(Point p, float spd, float acc);
 		bool MoveL(float x, float y, float z, float rx, float ry, float rz, float spd, float acc);
@@ -78,6 +81,9 @@ namespace rb {
 		bool ControlBoxAnalogOut(float a0, float a1, float a2, float a3);
 		bool ToolOut(int d0, int d1, DOUT_VOLT volt);
 
+		bool TestPlay();
+		bool TestStop();
+
 		bool BaseSpeedChange(float spd);
 
 		bool MotionPause();
@@ -93,6 +99,9 @@ namespace rb {
 		void ReqDataStart();
 
 		void RunThread();
+
+		//default: 30ms
+		void SetProcessingPeriod(int millisec);
 		//void JoinThread();
 	private:
 		bool isValidIP(string ip);
@@ -123,6 +132,10 @@ namespace rb {
 
 		struct sockaddr_in  cmd_addr_;
 		struct sockaddr_in  data_addr_;
+
+		int processing_period_ = 30;
+
+		bool bReadCmd = false;
 
 		vector<char> recv_buf_;
 

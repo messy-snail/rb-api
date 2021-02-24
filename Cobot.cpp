@@ -6,9 +6,6 @@ using namespace rb;
 
 #define PACKET_SIZE 4000
 
-//unit: ms
-const int WAIT_TIME = 30;
-
 
 Cobot::Cobot() {
 	memset(&systemStat, 0, sizeof(systemSTAT));
@@ -69,16 +66,22 @@ string Cobot::__Version() {
 	return __RB_VERSION__;
 }
 
-const Joint Cobot::GetCurrentJoint() {
-	//current_joint_ = Joint(systemStat.sdata.jnt_ang[0], systemStat.sdata.jnt_ang[1], systemStat.sdata.jnt_ang[2], systemStat.sdata.jnt_ang[3], systemStat.sdata.jnt_ang[4], systemStat.sdata.jnt_ang[5]);
+Joint Cobot::GetCurrentJoint() {
 	current_joint_ = Joint(systemStat.sdata.jnt_ref[0], systemStat.sdata.jnt_ref[1], systemStat.sdata.jnt_ref[2], systemStat.sdata.jnt_ref[3], systemStat.sdata.jnt_ref[4], systemStat.sdata.jnt_ref[5]);
 	return current_joint_;
 }
 
-const Point Cobot::GetCurrentTCP() {
-	//current_tcp_ = Point(systemStat.sdata.tcp_pos[0], systemStat.sdata.tcp_pos[1], systemStat.sdata.tcp_pos[2], systemStat.sdata.tcp_pos[3], systemStat.sdata.tcp_pos[4], systemStat.sdata.tcp_pos[5]);
+tuple<float, float, float, float, float, float> Cobot::GetCurrentSplitedJoint() {
+	return make_tuple(systemStat.sdata.jnt_ref[0], systemStat.sdata.jnt_ref[1], systemStat.sdata.jnt_ref[2], systemStat.sdata.jnt_ref[3], systemStat.sdata.jnt_ref[4], systemStat.sdata.jnt_ref[5]);
+}
+
+Point Cobot::GetCurrentTCP() {
 	current_tcp_ = Point(systemStat.sdata.tcp_ref[0], systemStat.sdata.tcp_ref[1], systemStat.sdata.tcp_ref[2], systemStat.sdata.tcp_ref[3], systemStat.sdata.tcp_ref[4], systemStat.sdata.tcp_ref[5]);
 	return current_tcp_;
+}
+
+tuple<float, float, float, float, float, float> Cobot::GetCurrentSplitedTCP() {
+	return make_tuple(systemStat.sdata.tcp_ref[0], systemStat.sdata.tcp_ref[1], systemStat.sdata.tcp_ref[2], systemStat.sdata.tcp_ref[3], systemStat.sdata.tcp_ref[4], systemStat.sdata.tcp_ref[5]);
 }
 
 bool Cobot::CobotInit() {
@@ -130,6 +133,7 @@ bool Cobot::MoveL(Point p, float spd, float acc) {
 	
 	if (!WSAGetLastError()) {
 		while (true) {
+			Sleep(processing_period_);
 			if (isMotionIdle()) {
 				send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
 				cout << msg << endl;
@@ -139,7 +143,7 @@ bool Cobot::MoveL(Point p, float spd, float acc) {
 				return true;
 			}
 			else {
-				Sleep(WAIT_TIME);
+				//Sleep(processing_period_/2);
 			}
 		}		
 	}
@@ -157,6 +161,7 @@ bool Cobot::MoveL(float x, float y, float z, float rx, float ry, float rz, float
 	
 	if (!WSAGetLastError()) {
 		while (true) {
+			Sleep(processing_period_);
 			if (isMotionIdle()) {
 				send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
 				cout << msg << endl;
@@ -166,7 +171,7 @@ bool Cobot::MoveL(float x, float y, float z, float rx, float ry, float rz, float
 				return true;
 			}
 			else {
-				Sleep(WAIT_TIME);
+				//Sleep(WAIT_TIME);
 			}
 		}
 	}
@@ -179,11 +184,14 @@ bool Cobot::MoveL(float x, float y, float z, float rx, float ry, float rz, float
 bool Cobot::MoveJ(Joint j, float spd, float acc) {
 	std::stringstream oss;
 	oss << fixed << setprecision(3);
-	oss << "jointall " << spd << ", " << acc << ", " << j.J0() << ", " << j.J1() << ", " << j.J2() << ", " << j.J3() << ", " << j.J4() << ", " << j.J5();
+	oss << "jointall " << spd << ", " << acc << ", " << j.J0() << ", " << j.J1() << ", " << j.J2() << ", " << j.J3() << ", " << j.J4() << ", " << j.J5()<<" ";
 	string msg = oss.str();
 	if (!WSAGetLastError() ) {
 		while (true) {
-			if (isMotionIdle()) {
+			Sleep(processing_period_);
+			//cout << "cmdConfirmFlag_MoveJ: " << boolalpha << cmdConfirmFlag << endl;
+			//cout << "systemStat.sdata.robot_state_MoveJ: " << systemStat.sdata.robot_state << endl;
+			if (isMotionIdle() && !bReadCmd) {
 				send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
 				cout << msg << endl;
 				moveCmdFlag = true;
@@ -192,9 +200,17 @@ bool Cobot::MoveJ(Joint j, float spd, float acc) {
 				return true;
 			}
 			else {
-				Sleep(WAIT_TIME);
+				//Sleep(WAIT_TIME);
+				cout << ".";
 			}
 		}
+		//send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+		//cout << msg << endl;
+		//moveCmdFlag = true;
+		//cmdConfirmFlag = false;
+		//systemStat.sdata.robot_state = 3; //run
+		
+		return true;
 	}
 	else {
 		return false;
@@ -210,7 +226,8 @@ bool Cobot::MoveJ(float j0, float j1, float j2, float j3, float j4, float j5, fl
 	
 	if (!WSAGetLastError()) {
 		while (true) {
-			if (isMotionIdle()) {
+			Sleep(processing_period_);
+			if (isMotionIdle() && !bReadCmd) {
 				send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
 				cout << msg << endl;
 				moveCmdFlag = true;
@@ -219,7 +236,8 @@ bool Cobot::MoveJ(float j0, float j1, float j2, float j3, float j4, float j5, fl
 				return true;
 			}
 			else {
-				Sleep(WAIT_TIME);
+				//Sleep(WAIT_TIME);
+				cout << ".";
 			}
 		}
 	}
@@ -283,6 +301,7 @@ bool Cobot::MoveJB_Run() {
 	
 	if (!WSAGetLastError()) {
 		while (true) {
+			Sleep(processing_period_);
 			if (isMotionIdle()) {
 				send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
 				cout << msg << endl;
@@ -292,7 +311,7 @@ bool Cobot::MoveJB_Run() {
 				return true;
 			}
 			else {
-				Sleep(WAIT_TIME);
+				//Sleep(WAIT_TIME);
 			}
 		}
 	}
@@ -358,6 +377,7 @@ bool Cobot::MoveLB_Run() {
 	
 	if (!WSAGetLastError()) {
 		while (true) {
+			Sleep(processing_period_);
 			if (isMotionIdle()) {
 				send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
 				cout << msg << endl;
@@ -367,7 +387,7 @@ bool Cobot::MoveLB_Run() {
 				return true;
 			}
 			else {
-				Sleep(WAIT_TIME);
+				//Sleep(WAIT_TIME);
 			}
 		}
 	}
@@ -397,7 +417,10 @@ bool Cobot::MoveCircle_ThreePoint(float x1, float y1, float z1, float rx1, float
 	
 	if (!WSAGetLastError() ) {
 		while (true) {
-			if (isMotionIdle()) {
+			Sleep(processing_period_);
+			//cout << "cmdConfirmFlag_MoveJ: " << boolalpha << cmdConfirmFlag << endl;
+			//cout << "systemStat.sdata.robot_state_MoveJ: " << systemStat.sdata.robot_state << endl;
+			if (isMotionIdle() && !bReadCmd) {
 				send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
 				cout << msg << endl;
 				moveCmdFlag = true;
@@ -406,7 +429,8 @@ bool Cobot::MoveCircle_ThreePoint(float x1, float y1, float z1, float rx1, float
 				return true;
 			}
 			else {
-				Sleep(WAIT_TIME);
+				//Sleep(WAIT_TIME);
+				cout << ".";
 			}
 		}	
 	}
@@ -434,7 +458,10 @@ bool Cobot::MoveCircle_ThreePoint(Point p1, Point p2, float spd, float acc, CIRC
 	string msg = oss.str();
 	if (!WSAGetLastError()) {
 		while (true) {
-			if (isMotionIdle()) {
+			Sleep(processing_period_);
+			//cout << "cmdConfirmFlag_MoveJ: " << boolalpha << cmdConfirmFlag << endl;
+			//cout << "systemStat.sdata.robot_state_MoveJ: " << systemStat.sdata.robot_state << endl;
+			if (isMotionIdle() && !bReadCmd) {
 				send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
 				cout << msg << endl;
 				moveCmdFlag = true;
@@ -443,7 +470,8 @@ bool Cobot::MoveCircle_ThreePoint(Point p1, Point p2, float spd, float acc, CIRC
 				return true;
 			}
 			else {
-				Sleep(WAIT_TIME);
+				//Sleep(WAIT_TIME);
+				cout << ".";
 			}
 		}
 	}
@@ -508,6 +536,18 @@ bool Cobot::ControlBoxAnalogOut(float a0, float a1, float a2, float a3) {
 		return false;
 	}
 }
+
+bool Cobot::TestPlay(){
+	string msg = "task play";
+	send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+	return true;
+}
+bool Cobot::TestStop() {
+	string msg = "task stop";
+	send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
+	return true;
+}
+
 //volt 12, 24
 bool Cobot::ToolOut(int d0, int d1, DOUT_VOLT volt) {
 	std::stringstream oss;
@@ -656,8 +696,37 @@ bool Cobot::SetMotionBreak(string condition, float dec_time) {
 //}
 
 void Cobot::ReadCmd() {
-	std::vector<char> buffer(PACKET_SIZE);
-	while (!WSAGetLastError()) {
+	
+	//while (!WSAGetLastError()) {
+	//	int result = recv(CMD_CLIENT_FD_, buffer.data(), buffer.size(), 0);
+	//	if (result != -1) {
+	//		buffer.resize(result);
+	//	}
+	//	else {
+	//		// Handle error
+	//	}
+	//	//string 持失
+	//	string cmd(buffer.begin(), buffer.end());
+	//	
+	//	cout << "[cmd]" << cmd << endl;
+	//	if (cmd.compare("The command was executed\n") == 0) {
+	//		cmdConfirmFlag = true;
+	//		if (moveCmdFlag == true) {
+	//			moveCmdCnt = 3;
+	//			systemStat.sdata.robot_state = 3;
+	//			moveCmdFlag = false;
+	//		}	
+	//	}
+	//	cout << "cmdConfirmFlag: " << boolalpha << cmdConfirmFlag << endl;
+	//	cout << "moveCmdFlag: " << boolalpha << moveCmdFlag << endl;
+	//	cout << "systemStat.sdata.robot_state: " << systemStat.sdata.robot_state << endl;
+	//	if (systemStat.sdata.robot_state == 1) {
+	//		int a = 0;
+	//	}
+	//}
+	while (true) {
+		Sleep(10);
+		std::vector<char> buffer(PACKET_SIZE);
 		int result = recv(CMD_CLIENT_FD_, buffer.data(), buffer.size(), 0);
 		if (result != -1) {
 			buffer.resize(result);
@@ -667,18 +736,34 @@ void Cobot::ReadCmd() {
 		}
 		//string 持失
 		string cmd(buffer.begin(), buffer.end());
-		
-		cout << "[cmd]" << cmd << endl;
+
+		//cout << "[cmd]" << cmd << endl;
 		if (cmd.compare("The command was executed\n") == 0) {
+			bReadCmd = true;
+			//cout << "[cmd2]" << cmd << endl;
 			cmdConfirmFlag = true;
+			//cout << "cmdConfirmFlag1: " << boolalpha << cmdConfirmFlag << endl;
+			//cout << "moveCmdFlag1: " << boolalpha << moveCmdFlag << endl;
+			//cout << "systemStat.sdata.robot_state1: " << systemStat.sdata.robot_state << endl;
 			if (moveCmdFlag == true) {
-				moveCmdCnt = 4;
-				systemStat.sdata.robot_state = 3;
+				moveCmdCnt = 3;
+				systemStat.sdata.robot_state = 3;				
 				moveCmdFlag = false;
-			}	
+			}
+			else {
+				//return;
+			}
+			bReadCmd = false;
 		}
-		cout << "moveCmdFlag: " << boolalpha << moveCmdFlag << endl;
+		//cout << "cmdConfirmFlag2: " << boolalpha << cmdConfirmFlag << endl;
+		//cout << "moveCmdFlag2: " << boolalpha << moveCmdFlag << endl;
+		//cout << "systemStat.sdata.robot_state2: " << systemStat.sdata.robot_state << endl;
+		if (systemStat.sdata.robot_state == 1) {
+			int a = 0;
+		}
+		buffer.clear();
 	}
+	
 }
 
 
@@ -701,6 +786,10 @@ void Cobot::RunThread() {
 	proc1.detach();
 	proc2.detach();
 	proc3.detach();
+}
+
+void Cobot::SetProcessingPeriod(int millisec) {
+	processing_period_ = millisec;
 }
 
 //void Cobot::JoinThread() {
@@ -795,7 +884,8 @@ bool Cobot::isValidIP(string ip) {
 }
 
 bool Cobot::isMotionIdle() {
-	return ((cmdConfirmFlag == true) && (systemStat.sdata.robot_state == 1));
+	//return ((cmdConfirmFlag == true) && (systemStat.sdata.robot_state == 1));
+	return (systemStat.sdata.robot_state == 1);
 }
 
 
@@ -808,7 +898,7 @@ bool Cobot::socketCmdCom(string ip) {
 	}
 	//data_sock_ = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	CMD_CLIENT_FD_ = socket(AF_INET, SOCK_STREAM, 0);
-	cout << "Command socket : " << CMD_CLIENT_FD_ << endl;
+	//cout << "Command socket : " << CMD_CLIENT_FD_ << endl;
 	if (CMD_CLIENT_FD_ == -1) {
 		//exception
 	}
@@ -851,7 +941,7 @@ bool Cobot::socketDataCom(string ip) {
 	}
 	//data_sock_ = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	DATA_CLIENT_FD_ = socket(AF_INET, SOCK_STREAM, 0);
-	cout << "Data socket : " << DATA_CLIENT_FD_ << endl;
+	//cout << "Data socket : " << DATA_CLIENT_FD_ << endl;
 	if (DATA_CLIENT_FD_ == -1) {
 		//exception
 	}
