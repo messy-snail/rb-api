@@ -227,7 +227,7 @@ bool Cobot::MoveJ(Joint j, float spd, float acc) {
 bool Cobot::MoveJ(float j0, float j1, float j2, float j3, float j4, float j5, float spd, float acc) {
 	std::stringstream oss;
 	oss << fixed << setprecision(3);
-	oss << "jointall " << spd << ", " << acc << ", " << j0 << ", " << j1 << ", " << j2 << ", " << j3 << ", " << j4 << ", " << j5;
+	oss << "jointall " << spd << ", " << acc << ", " << j0 << ", " << j1 << ", " << j2 << ", " << j3 << ", " << j4 << ", " << j5<<" ";
 	string msg = oss.str();
 	
 	if (!WSAGetLastError()) {
