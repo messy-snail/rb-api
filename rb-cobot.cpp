@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "Cobot.h"
+#include "rb-cobot.h"
 #include <Ws2tcpip.h>
 #include <iomanip>
 using namespace rb;
@@ -64,6 +64,10 @@ tuple<float, float, float, float, float, float> Cobot::GetCurrentSplitedJoint() 
 Point Cobot::GetCurrentTCP() {
 	current_tcp_ = Point(systemStat.sdata.tcp_ref[0], systemStat.sdata.tcp_ref[1], systemStat.sdata.tcp_ref[2], systemStat.sdata.tcp_ref[3], systemStat.sdata.tcp_ref[4], systemStat.sdata.tcp_ref[5]);
 	return current_tcp_;
+}
+
+tuple<Joint, Point> Cobot::GetCurrentJP() {
+
 }
 
 tuple<float, float, float, float, float, float> Cobot::GetCurrentSplitedTCP() {

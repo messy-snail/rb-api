@@ -7,7 +7,7 @@
 #define POINT_DECLSPEC __declspec(dllimport)
 #endif
 
-#include "CommonHeader.h"
+#include "rb-common-header.h"
 using namespace std;
 
 namespace rb {
@@ -21,6 +21,13 @@ namespace rb {
 		float rx_ = 0.f;
 		float ry_ = 0.f;
 		float rz_ = 0.f;
+
+		float j0_ = 0.f;
+		float j1_ = 0.f;
+		float j2_ = 0.f;
+		float j3_ = 0.f;
+		float j4_ = 0.f;
+		float j5_ = 0.f;
 
 	public:
 		Point() {}

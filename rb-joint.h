@@ -7,7 +7,7 @@
 #define JOINT_DECLSPEC __declspec(dllimport)
 #endif
 
-#include "CommonHeader.h"
+#include "rb-common-header.h"
 using namespace std;
 
 namespace rb {
@@ -20,6 +20,13 @@ namespace rb {
 		float j3_ = 0.f;
 		float j4_ = 0.f;
 		float j5_ = 0.f;
+
+		float x_ = 0.f;
+		float y_ = 0.f;
+		float z_ = 0.f;
+		float rx_ = 0.f;
+		float ry_ = 0.f;
+		float rz_ = 0.f;
 	public:
 		Joint() {}
 		Joint(const float j0, const float j1, const float j2, const float j3, const float j4, const float j5);

@@ -7,9 +7,9 @@
 #define COBOT_DECLSPEC __declspec(dllimport)
 #endif
 
-#include "CommonHeader.h"
-#include "Point.h"
-#include "Joint.h"
+#include "rb-common-header.h"
+#include "rb-point.h"
+#include "rb-joint.h"
 
 using namespace std;
 

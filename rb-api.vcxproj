@@ -110,8 +110,10 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <OutputFile>$(OutDir)$(TargetName)d$(TargetExt)</OutputFile>
+      <ImportLibrary>$(OutDir)$(TargetName)d.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -155,25 +157,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Cobot.h" />
+    <ClInclude Include="rb-cobot.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Joint.h" />
+    <ClInclude Include="rb-joint.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="CommonHeader.h" />
-    <ClInclude Include="Point.h" />
+    <ClInclude Include="rb-common-header.h" />
+    <ClInclude Include="rb-point.h" />
     <ClInclude Include="rb-world.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Cobot.cpp" />
+    <ClCompile Include="rb-cobot.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Joint.cpp" />
+    <ClCompile Include="rb-joint.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Point.cpp" />
+    <ClCompile Include="rb-point.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

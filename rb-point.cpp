@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Point.h"
+#include "rb-point.h"
 
 using namespace rb;
 
