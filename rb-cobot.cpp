@@ -67,7 +67,9 @@ Point Cobot::GetCurrentTCP() {
 }
 
 tuple<Joint, Point> Cobot::GetCurrentJP() {
-
+	current_joint_ = Joint(systemStat.sdata.jnt_ref[0], systemStat.sdata.jnt_ref[1], systemStat.sdata.jnt_ref[2], systemStat.sdata.jnt_ref[3], systemStat.sdata.jnt_ref[4], systemStat.sdata.jnt_ref[5]);
+	current_tcp_ = Point(systemStat.sdata.tcp_ref[0], systemStat.sdata.tcp_ref[1], systemStat.sdata.tcp_ref[2], systemStat.sdata.tcp_ref[3], systemStat.sdata.tcp_ref[4], systemStat.sdata.tcp_ref[5]);
+	return make_tuple(current_joint_, current_tcp_);
 }
 
 tuple<float, float, float, float, float, float> Cobot::GetCurrentSplitedTCP() {

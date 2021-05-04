@@ -85,6 +85,9 @@ namespace rb {
 		//현재 로봇의 TCP 위치 획득
 		Point GetCurrentTCP();
 		tuple<float, float, float, float, float, float> GetCurrentSplitedTCP();
+
+		//현재 로봇의 관절 각도 값, TCP 위치 획득
+		tuple<Joint, Point> GetCurrentJP();
 		
 		//협동로봇 속도 설정
 		bool SetBaseSpeed(float spd);
