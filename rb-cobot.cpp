@@ -757,7 +757,7 @@ bool Cobot::MoveCircle_Axis(float x1, float y1, float z1, float rx1, float ry1, 
 	std::stringstream oss;
 	oss << fixed << setprecision(3);
 	oss << "move_c_axis(pnt[" << x1 << ", " << y1 << ", " << z1 << ", " << rx1 << ", " << ry1 << ", " << rz1 << "], " << a_option
-		<< "," << angle << "," << spd << ", " << acc << r_option << ") ";
+		<< "," << angle << "," << spd << ", " << acc << "," << r_option << ") ";
 
 	string msg = oss.str();
 	if (!WSAGetLastError()) {
@@ -817,7 +817,7 @@ bool Cobot::MoveCircle_Axis(Point p1, CIRCLE_AXIS axis, float angle, float spd, 
 	std::stringstream oss;
 	oss << fixed << setprecision(3);
 	oss << "move_c_axis(pnt[" << p1.X() << ", " << p1.Y() << ", " << p1.Z() << ", " << p1.RX() << ", " << p1.RY() << ", " << p1.RZ() << "], " << a_option
-		<< "," << angle << "," << spd << ", " << acc << r_option << ") ";
+		<< "," << angle << "," << spd << ", " << acc << "," << r_option << ") ";
 
 	string msg = oss.str();
 	if (!WSAGetLastError()) {
