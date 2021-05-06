@@ -556,7 +556,7 @@ bool Cobot::MoveITPL_Add(Point p, float spd) {
 
 	std::stringstream oss;
 	oss << fixed << setprecision(3);
-	oss << "move_pb_add(pnt[" << p.X() << ", " << p.Y() << ", " << p.Z() << ", " << p.RX() << ", " << p.RY() << ", " << p.RZ() << "], " << spd << ") ";
+	oss << "move_itpl_add(pnt[" << p.X() << ", " << p.Y() << ", " << p.Z() << ", " << p.RX() << ", " << p.RY() << ", " << p.RZ() << "], " << spd << ") ";
 	string msg = oss.str();
 
 	if (!WSAGetLastError()) {
@@ -575,7 +575,7 @@ bool Cobot::MoveITPL_Add(float x, float y, float z, float rx, float ry, float rz
 
 	std::stringstream oss;
 	oss << fixed << setprecision(3);
-	oss << "move_pb_add(pnt[" << x << ", " << y << ", " << z << ", " << rx << ", " << ry << ", " << rz << "], " << spd << ") ";
+	oss << "move_itpl_add(pnt[" << x << ", " << y << ", " << z << ", " << rx << ", " << ry << ", " << rz << "], " << spd << ") ";
 	//oss << "blend_tcp add_pt " << spd << ", " << acc << ", " << radius << ", " << x << ", " << y << ", " << z << ", " << rx << ", " << ry << ", " << rz;
 	string msg = oss.str();
 
