@@ -30,7 +30,43 @@ namespace rb {
 	enum class CIRCLE_TYPE {
 		INTENDED,
 		CONSTANT,
-		RADIAL
+		RADIAL,
+		SMOOTH
+	};
+
+	//원동작 타입
+	enum class CIRCLE_AXIS {
+		X,
+		Y,
+		Z
+	};
+
+	enum class BLEND_OPTION {
+		RATIO,
+		DISTANCE
+	};
+
+	enum class BLEND_RTYPE {
+		INTENDED,
+		CONSTANT
+	};
+
+	enum class ITPL_RTYPE {
+		INTENDED,
+		CONSTANT,
+		RESERVED1,
+		SMOOTH,
+		RESERVED2,
+		CA_INTENDED,
+		CA_CONSTANT,
+		RESERVED3,
+		CA_SMOOTH
+	};
+
+	enum class DOUT_SET {
+		LOW,
+		HIGH,
+		BYPASS
 	};
 
 	//디지털 출력 전압
@@ -112,31 +148,49 @@ namespace rb {
 		bool MoveJ(Joint j, float spd, float acc);
 		bool MoveJ(float j0, float j1, float j2, float j3, float j4, float j5, float spd, float acc);
 
+		//Move JL
+		bool MoveJL(float x, float y, float z, float rx, float ry, float rz, float spd, float acc);
+		bool MoveJL(Point p, float spd, float acc);
+
 		//Move Joint Blend
 		bool MoveJB_Clear();
-		bool MoveJB_Add(Joint j, float spd, float acc);
-		bool MoveJB_Add(float j0, float j1, float j2, float j3, float j4, float j5, float spd, float acc);
-		bool MoveJB_Run();		
+		bool MoveJB_Add(Joint j);
+		bool MoveJB_Add(float j0, float j1, float j2, float j3, float j4, float j5);
+		bool MoveJB_Run(float spd, float acc);
 
 		//Move Linear Blend
-		bool MoveLB_Clear();
-		bool MoveLB_Add(Point p, float spd, float acc, float radius);
-		bool MoveLB_Add(float x, float y, float z, float rx, float ry, float rz, float spd, float acc, float radius);
-		bool MoveLB_Run();
+		bool MovePB_Clear();
+		bool MovePB_Add(Point p, float spd, BLEND_OPTION option, float quantity);
+		bool MovePB_Add(float x, float y, float z, float rx, float ry, float rz, float spd, BLEND_OPTION option, float quantity);
+		bool MovePB_Run(float acc, BLEND_RTYPE type);
+
+		//Move Interpolation
+		bool MoveITPL_Clear();
+		bool MoveITPL_Add(Point p, float spd);
+		bool MoveITPL_Add(float x, float y, float z, float rx, float ry, float rz, float spd);
+		bool MoveITPL_Run(float acc, ITPL_RTYPE type);
 
 		//원 동작
 		bool MoveCircle_ThreePoint(float x1, float y1, float z1, float rx1, float ry1, float rz1, float x2, float y2, float z2, float rx2, float ry2, float rz2, float spd, float acc, CIRCLE_TYPE type);
 		bool MoveCircle_ThreePoint(Point p1, Point p2, float spd, float acc, CIRCLE_TYPE type);
+		bool MoveCircle_Axis(float x1, float y1, float z1, float rx1, float ry1, float rz1, CIRCLE_AXIS axis, float angle, float spd, float acc, CIRCLE_TYPE type);
+		bool MoveCircle_Axis(Point p1, CIRCLE_AXIS axis, float angle, float spd, float acc, CIRCLE_TYPE type);		
 
 		//제어박스 디지털 출력
-		bool ControlBoxDigitalOut(DOUT_PORT port);
-		bool ControlBoxDigitalOut(int d0, int d1, int d2, int d3, int d4, int d5, int d6, int d7, int d8, int d9, int d10, int d11, int d12, int d13, int d14, int d15);
+		//bool ControlBoxDigitalOut(DOUT_PORT port);
+		//bool ControlBoxDigitalOut(int d0, int d1, int d2, int d3, int d4, int d5, int d6, int d7, int d8, int d9, int d10, int d11, int d12, int d13, int d14, int d15);
+
+		bool CBDigitalOut(float port, DOUT_SET type);
+		bool CBAnalogOut(float port, float volt);
 		
 		//제어박스 아날로그 출력
-		bool ControlBoxAnalogOut(float a0, float a1, float a2, float a3);
+		//bool ControlBoxAnalogOut(float a0, float a1, float a2, float a3);
 
 		//툴플렌지 출력
-		bool ToolOut(int d0, int d1, DOUT_VOLT volt);		
+		//bool ToolDigitalOut(int d0, int d1, DOUT_VOLT volt);
+
+		//로봇팔 전원 차단
+		bool RobotPowerDown(void);
 
 		//default: 30ms
 		void SetWaitTime(int millisec);
@@ -146,6 +200,15 @@ namespace rb {
 
 		//협동로봇 일시정지 유무
 		bool IsPause();
+
+		//협동로봇 활성화 유무
+		bool IsInitialized();
+
+		//협동로봇 동작 모드
+		bool IsRobotReal();
+
+		//스크립트 직접 작성
+		bool ManualScript(string ex_msg);
 
 		//협동로봇 현재 상태
 		COBOT_STATUS GetCurrentCobotStatus();
