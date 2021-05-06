@@ -710,6 +710,8 @@ bool Cobot::MoveCircle_ThreePoint(Point p1, Point p2, float spd, float acc, CIRC
 				moveCmdFlag = true;
 				cmdConfirmFlag = false;
 				systemStat.sdata.robot_state = 3; //run
+
+
 				return true;
 			}
 			else if (IsPause()) {
@@ -1034,7 +1036,7 @@ bool Cobot::SetBaseSpeed(float spd) {
 
 	std::stringstream oss;
 	oss << fixed << setprecision(3);
-	oss << "sdw default_speed " << spd;
+	oss << "set_speed_bar(" << spd<<") ";
 	string msg = oss.str();
 
 	if (!WSAGetLastError()) {
@@ -1096,6 +1098,7 @@ bool Cobot::CollisionResume() {//when external collision was detected, use this 
 		return false;
 	}
 }
+
 bool Cobot::SetMotionBreak(string condition, float dec_time) {
 	std::stringstream oss;
 	oss << fixed << setprecision(3);
