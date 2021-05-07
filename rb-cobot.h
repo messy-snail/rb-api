@@ -207,6 +207,12 @@ namespace rb {
 		//협동로봇 동작 모드
 		bool IsRobotReal();
 
+		//커맨드 소켓 연결 확인
+		bool IsCommandSockConnect();
+
+		//데이터 소켓 연결 확인
+		bool IsDataSockConnect();
+
 		//스크립트 직접 작성
 		bool ManualScript(string ex_msg);
 
@@ -226,6 +232,8 @@ namespace rb {
 		bool socketCmdCom(string ip);
 		bool socketCmdClose();
 
+		bool cmd_conneted = false;
+		bool data_conneted = false;
 		
 		bool socketDataCom(string ip);
 		bool socketDataClose();

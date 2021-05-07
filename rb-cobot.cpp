@@ -35,7 +35,11 @@ bool Cobot::ConnectToCB(string ip) {
 		cout << ip_address_ << endl;
 		bool cmd_success = socketCmdCom(ip_address_);
 		bool data_success = socketDataCom(ip_address_);
-		if (cmd_success&& data_success) {
+
+		cmd_conneted = cmd_success;
+		data_conneted = data_success;
+
+		if (cmd_success && data_success) {
 			RunThread();
 			return true;
 		}
@@ -1359,6 +1363,35 @@ bool Cobot::IsRobotReal() {
 		return true;
 	else
 		return false;
+}
+
+bool Cobot::IsCommandSockConnect() {
+	
+	string status;
+	if (data_conneted == true) {
+		status = "Command Connected";
+		cout << status << endl;
+		return true;
+	}
+	else {
+		status = "Command DisConnect";
+		cout << status << endl;
+		return false;
+	}	
+}
+
+bool Cobot::IsDataSockConnect() {
+	string status;
+	if (data_conneted == true) {
+		status = "Data Connected";
+		cout << status << endl;
+		return true;
+	}
+	else {
+		status = "Data DisConnect";
+		cout << status << endl;
+		return false;
+	}
 }
 
 COBOT_STATUS Cobot::GetCurrentCobotStatus() {
