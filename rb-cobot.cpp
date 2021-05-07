@@ -51,6 +51,49 @@ bool Cobot::ConnectToCB(string ip) {
 	return false;
 }
 
+bool Cobot::ConnectToCMD(string ip) {
+	if (isValidIP(ip)) {
+		//deep copy
+		ip_address_ = ip;
+		cout << ip_address_ << endl;
+		bool cmd_success = socketCmdCom(ip_address_);
+
+		cmd_conneted = cmd_success;
+
+		if (cmd_success) {
+			RunCMDThread();
+			return true;
+		}
+		else {
+			return false;
+		}
+		//return socketCmdCom(ip_address_) && socketDataCom(ip_address_);
+	}
+	return false;
+}
+
+bool Cobot::ConnectToData(string ip) {
+	if (isValidIP(ip)) {
+		//deep copy
+		ip_address_ = ip;
+		cout << ip_address_ << endl;
+		bool data_success = socketDataCom(ip_address_);
+
+		data_conneted = data_success;
+
+		if (data_success) {
+			RunDataThread();
+			return true;
+		}
+		else {
+			return false;
+		}
+		//return socketCmdCom(ip_address_) && socketDataCom(ip_address_);
+	}
+	return false;
+}
+
+
 string Cobot::__Version() {
 	cout << "RB-API: "<<__RB_VERSION__ << endl;
 	return __RB_VERSION__;
@@ -1180,6 +1223,7 @@ void Cobot::ReadCmd() {
 		int result = recv(CMD_CLIENT_FD_, buffer.data(), buffer.size(), 0);
 		if (result != -1) {
 			buffer.resize(result);
+			cout << "test" << endl;
 		}
 		else {
 			// Handle error
@@ -1203,6 +1247,7 @@ void Cobot::ReadCmd() {
 			else {
 				//return;
 			}
+			cout << "test" << endl;
 			bReadCmd = false;
 		}
 		//cout << "cmdConfirmFlag2: " << boolalpha << cmdConfirmFlag << endl;
@@ -1236,6 +1281,19 @@ void Cobot::RunThread() {
 	proc1.detach();
 	proc2.detach();
 	proc3.detach();
+}
+
+void Cobot::RunCMDThread() {
+	cout << "cmdthread" << endl;
+	thread proc4_cmd = thread(&rb::Cobot::ReadCmd, this);
+	proc4_cmd.detach();
+}
+
+void Cobot::RunDataThread() {
+	thread proc5_datareq = thread(&rb::Cobot::ReqDataStart, this);
+	thread proc5_dataread = thread(&rb::Cobot::ReadData, this);
+	proc5_datareq.detach();
+	proc5_dataread.detach();
 }
 
 void Cobot::SetWaitTime(int millisec) {

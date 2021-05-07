@@ -105,6 +105,8 @@ namespace rb {
 
 		//제어박스와 통신 연결
 		bool ConnectToCB(string ip="10.0.2.7");
+		bool ConnectToCMD(string ip = "10.0.2.7");
+		bool ConnectToData(string ip = "10.0.2.7");
 
 		string __Version();
 
@@ -223,6 +225,8 @@ namespace rb {
 		void ReadCmd();
 		void ReadData();
 		void RunThread();
+		void RunCMDThread();
+		void RunDataThread();
 		void ReqDataStart();
 
 		bool SetMotionBreak(string condition, float dec_time);
@@ -266,6 +270,10 @@ namespace rb {
 		thread proc1;
 		thread proc2;
 		thread proc3;
+
+		thread proc4_cmd;
+		thread proc5_datareq;
+		thread proc6_dataread;
 	};
 }
 
