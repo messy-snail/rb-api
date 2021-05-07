@@ -1146,23 +1146,6 @@ bool Cobot::CollisionResume() {//when external collision was detected, use this 
 	}
 }
 
-bool Cobot::SetMotionBreak(string condition, float dec_time) {//???? 우정사업용?
-	std::stringstream oss;
-	oss << fixed << setprecision(3);
-	oss << "set_motion_break " << condition<<","<< dec_time;
-	string msg = oss.str();
-
-	if (!WSAGetLastError()) {
-		send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
-		cout << msg << endl;
-		cmdConfirmFlag = false;
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
 bool Cobot::RobotPowerDown(void) {
 	string msg = "arm_powerdown() ";
 

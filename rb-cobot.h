@@ -229,8 +229,6 @@ namespace rb {
 		void RunDataThread();
 		void ReqDataStart();
 
-		bool SetMotionBreak(string condition, float dec_time);
-
 		bool isValidIP(string ip);		
 
 		bool socketCmdCom(string ip);
