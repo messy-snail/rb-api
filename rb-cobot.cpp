@@ -644,7 +644,7 @@ bool Cobot::MoveCircle_ThreePoint(float x1, float y1, float z1, float rx1, float
 	//oss << "movecircle absolute threepoints " << option <<" "<<spd << ", " << acc << ", " << x1 << ", " << y1 << ", " << z1 << ", " << rx1 << ", " << ry1 << ", " << rz1
 	//	<< ", " << x2 << ", " << y2 << ", " << z2 << ", " << rx2 << ", " << ry2 << ", " << rz2;
 	oss << "move_c_points(pnt[" << x1 << ", " << y1 << ", " << z1 << ", " << rx1 << ", " << ry1 << ", " << rz1 << "], pnt["
-		<< x2 << ", " << y2 << ", " << z2 << ", " << rx2 << ", " << ry2 << ", " << rz2 << "] ,"<< r_option << "," << spd << ", " << acc << ") ";
+		<< x2 << ", " << y2 << ", " << z2 << ", " << rx2 << ", " << ry2 << ", " << rz2 << "] ," << spd << ", " << acc << ", " << r_option << ") ";
 
 	string msg = oss.str();
 	
@@ -696,7 +696,7 @@ bool Cobot::MoveCircle_ThreePoint(Point p1, Point p2, float spd, float acc, CIRC
 	//oss << "movecircle absolute threepoints " << option << " " << spd << ", " << acc << ", " << p1.X() << ", " << p1.Y() << ", " << p1.Z() << ", " << p1.RX() << ", " << p1.RY() << ", " << p1.RZ()
 	//	<< ", " << p2.X() << ", " << p2.Y() << ", " << p2.Z() << ", " << p2.RX() << ", " << p2.RY() << ", " << p2.RZ();
 	oss << "move_c_points(pnt[" << p1.X() << ", " << p1.Y() << ", " << p1.Z() << ", " << p1.RX() << ", " << p1.RY() << ", " << p1.RZ() << "], pnt["
-		<< p2.X() << ", " << p2.Y() << ", " << p2.Z() << ", " << p2.RX() << ", " << p2.RY() << ", " << p2.RZ() << "] ," << r_option << "," << spd << ", " << acc << ") ";
+		<< p2.X() << ", " << p2.Y() << ", " << p2.Z() << ", " << p2.RX() << ", " << p2.RY() << ", " << p2.RZ() << "] ," << spd << ", " << acc << ", " << r_option << ") ";
 
 	string msg = oss.str();
 	if (!WSAGetLastError()) {
@@ -1099,7 +1099,7 @@ bool Cobot::CollisionResume() {//when external collision was detected, use this 
 	}
 }
 
-bool Cobot::SetMotionBreak(string condition, float dec_time) {
+bool Cobot::SetMotionBreak(string condition, float dec_time) {//???? 우정사업용?
 	std::stringstream oss;
 	oss << fixed << setprecision(3);
 	oss << "set_motion_break " << condition<<","<< dec_time;
