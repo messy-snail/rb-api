@@ -51,7 +51,7 @@ bool Cobot::ConnectToCB(string ip) {
 	return false;
 }
 
-bool Cobot::DisConnectToCB() {
+bool Cobot::DisConnectToCB() {//data socket의 close의 경우 바로 return이 0이 돌아오지 않는다.
 	cout << "disconnect cb" << endl;
 	bool cmd = socketCmdClose();
 	bool data = socketDataClose();
@@ -1224,7 +1224,7 @@ void Cobot::ReadCmd() {
 		int result = recv(CMD_CLIENT_FD_, buffer.data(), buffer.size(), 0);
 		if (result != -1) {
 			buffer.resize(result);
-			cout << "test" << endl;
+			//cout << "test" << endl;
 		}
 		else {
 			// Handle error
@@ -1248,7 +1248,7 @@ void Cobot::ReadCmd() {
 			else {
 				//return;
 			}
-			cout << "test" << endl;
+			//cout << "test" << endl;
 			bReadCmd = false;
 		}
 		//cout << "cmdConfirmFlag2: " << boolalpha << cmdConfirmFlag << endl;
