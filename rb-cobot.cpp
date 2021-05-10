@@ -51,47 +51,47 @@ bool Cobot::ConnectToCB(string ip) {
 	return false;
 }
 
-bool Cobot::ConnectToCMD(string ip) {
-	if (isValidIP(ip)) {
-		//deep copy
-		ip_address_ = ip;
-		cout << ip_address_ << endl;
-		bool cmd_success = socketCmdCom(ip_address_);
-
-		cmd_conneted = cmd_success;
-
-		if (cmd_success) {
-			RunCMDThread();
-			return true;
-		}
-		else {
-			return false;
-		}
-		//return socketCmdCom(ip_address_) && socketDataCom(ip_address_);
-	}
-	return false;
-}
-
-bool Cobot::ConnectToData(string ip) {
-	if (isValidIP(ip)) {
-		//deep copy
-		ip_address_ = ip;
-		cout << ip_address_ << endl;
-		bool data_success = socketDataCom(ip_address_);
-
-		data_conneted = data_success;
-
-		if (data_success) {
-			RunDataThread();
-			return true;
-		}
-		else {
-			return false;
-		}
-		//return socketCmdCom(ip_address_) && socketDataCom(ip_address_);
-	}
-	return false;
-}
+//bool Cobot::ConnectToCMD(string ip) {
+//	if (isValidIP(ip)) {
+//		//deep copy
+//		ip_address_ = ip;
+//		cout << ip_address_ << endl;
+//		bool cmd_success = socketCmdCom(ip_address_);
+//
+//		cmd_conneted = cmd_success;
+//
+//		if (cmd_success) {
+//			RunCMDThread();
+//			return true;
+//		}
+//		else {
+//			return false;
+//		}
+//		//return socketCmdCom(ip_address_) && socketDataCom(ip_address_);
+//	}
+//	return false;
+//}
+//
+//bool Cobot::ConnectToData(string ip) {
+//	if (isValidIP(ip)) {
+//		//deep copy
+//		ip_address_ = ip;
+//		cout << ip_address_ << endl;
+//		bool data_success = socketDataCom(ip_address_);
+//
+//		data_conneted = data_success;
+//
+//		if (data_success) {
+//			RunDataThread();
+//			return true;
+//		}
+//		else {
+//			return false;
+//		}
+//		//return socketCmdCom(ip_address_) && socketDataCom(ip_address_);
+//	}
+//	return false;
+//}
 
 
 string Cobot::__Version() {
@@ -1266,18 +1266,18 @@ void Cobot::RunThread() {
 	proc3.detach();
 }
 
-void Cobot::RunCMDThread() {
-	cout << "cmdthread" << endl;
-	thread proc4_cmd = thread(&rb::Cobot::ReadCmd, this);
-	proc4_cmd.detach();
-}
-
-void Cobot::RunDataThread() {
-	thread proc5_datareq = thread(&rb::Cobot::ReqDataStart, this);
-	thread proc5_dataread = thread(&rb::Cobot::ReadData, this);
-	proc5_datareq.detach();
-	proc5_dataread.detach();
-}
+//void Cobot::RunCMDThread() {
+//	cout << "cmdthread" << endl;
+//	thread proc4_cmd = thread(&rb::Cobot::ReadCmd, this);
+//	proc4_cmd.detach();
+//}
+//
+//void Cobot::RunDataThread() {
+//	thread proc5_datareq = thread(&rb::Cobot::ReqDataStart, this);
+//	thread proc5_dataread = thread(&rb::Cobot::ReadData, this);
+//	proc5_datareq.detach();
+//	proc5_dataread.detach();
+//}
 
 void Cobot::SetWaitTime(int millisec) {
 	wait_time_ = millisec;

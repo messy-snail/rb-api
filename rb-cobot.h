@@ -220,13 +220,13 @@ namespace rb {
 
 		//협동로봇 현재 상태
 		COBOT_STATUS GetCurrentCobotStatus();
-
+		
 	private:
 		void ReadCmd();
 		void ReadData();
 		void RunThread();
-		void RunCMDThread();
-		void RunDataThread();
+		//void RunCMDThread();
+		//void RunDataThread();
 		void ReqDataStart();
 
 		bool isValidIP(string ip);		
