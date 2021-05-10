@@ -51,6 +51,19 @@ bool Cobot::ConnectToCB(string ip) {
 	return false;
 }
 
+bool Cobot::DisConnectToCB() {
+	if (socketCmdClose() && socketDataClose()) {
+		cmd_conneted = false;
+		data_conneted = false;
+
+		return true;
+	}		
+	else {
+		return false;
+	}
+		
+}
+
 //bool Cobot::ConnectToCMD(string ip) {
 //	if (isValidIP(ip)) {
 //		//deep copy

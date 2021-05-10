@@ -108,6 +108,9 @@ namespace rb {
 		bool ConnectToCMD(string ip = "10.0.2.7");
 		bool ConnectToData(string ip = "10.0.2.7");
 
+		//제어박스와 통신 끊기
+		bool DisConnectToCB();
+
 		string __Version();
 
 		//협동로봇 초기화
