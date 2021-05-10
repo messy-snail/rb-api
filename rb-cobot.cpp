@@ -52,10 +52,15 @@ bool Cobot::ConnectToCB(string ip) {
 }
 
 bool Cobot::DisConnectToCB() {
-	if (socketCmdClose() && socketDataClose()) {
+	cout << "disconnect cb" << endl;
+	bool cmd = socketCmdClose();
+	bool data = socketDataClose();
+
+	Sleep(1000);
+
+	if (1) {
 		cmd_conneted = false;
 		data_conneted = false;
-
 		return true;
 	}		
 	else {
@@ -1506,6 +1511,7 @@ bool Cobot::socketCmdCom(string ip) {
 
 bool Cobot::socketCmdClose() {
 	WSACleanup();
+	//cmd_connected = false;
 	return closesocket(CMD_CLIENT_FD_);
 }
 
@@ -1546,7 +1552,8 @@ bool Cobot::socketDataCom(string ip) {
 }
 
 bool Cobot::socketDataClose() {
-	WSACleanup();
+	WSACleanup();	
+	//data_conneted = false;
 	return closesocket(DATA_CLIENT_FD_);
 }
 
