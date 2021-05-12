@@ -1,6 +1,18 @@
 #ifndef COBOT_H
 #define COBOT_H
 
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include <thread>
+#include <WinSock2.h>
+
+#pragma comment(lib, "ws2_32")
+
+
 #ifdef RB_EXPORTS
 #define COBOT_DECLSPEC __declspec(dllexport)
 #else
@@ -19,12 +31,6 @@
 #define JOINT_DECLSPEC __declspec(dllimport)
 #endif
 
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-
 #define MAX_MC					1
 #define RT_TIMER_PERIOD_MS		2
 #define COMMAND_CANID           0x01
@@ -38,19 +44,13 @@
 #define LOG_WARN    "\033[1;33m"
 #define LOG_NORMAL  "\033[0m"
 
-
-//#include "rb-common-header.h"
-//#include "rb-point.h"
-//#include "rb-joint.h"
-
 using namespace std;
 
-#include <thread>
-#include <WinSock2.h>
-
-#pragma comment(lib, "ws2_32")
-
 namespace rb {
+
+	/// <summary>
+	/// Data receive Struct
+	/// </summary>
 
 	const string __RB_VERSION__ = "a-0.1";
 
@@ -319,6 +319,10 @@ namespace rb {
 	extern systemPOPUP* sys_popup;
 	extern systemPOPUP* sys_custom_alarm;
 	
+	/// <summary>
+	/// OPTION, TYPE ENUM
+	/// </summary>
+	
 	//프로그램 모드
 	enum class PG_MODE {
 		SIMULATION,
@@ -387,18 +391,14 @@ namespace rb {
 		UNKNOWN
 	};	
 
-	////제어박스 디지털 출력 신호
-	//const int SIGNAL_BYPASS = -1;
-	//const int SIGNAL_LOW = 0;
-	//const int SIGNAL_HIGH = 1;
+	enum class CMD_TYPE {
+		MOVE,
+		NONMOVE
+	};
 
-	////제어박스 디지털 출력 포트
-	//using DOUT_PORT = struct dout_port{
-	//	int d0 = SIGNAL_BYPASS;		int d1 = SIGNAL_BYPASS; 		int d2 = SIGNAL_BYPASS; 		int d3 = SIGNAL_BYPASS;
-	//	int d4 = SIGNAL_BYPASS;		int d5 = SIGNAL_BYPASS; 		int d6 = SIGNAL_BYPASS; 		int d7 = SIGNAL_BYPASS;
-	//	int d8 = SIGNAL_BYPASS;		int d9 = SIGNAL_BYPASS; 		int d10 = SIGNAL_BYPASS; 		int d11 = SIGNAL_BYPASS;
-	//	int d12 = SIGNAL_BYPASS;		int d13 = SIGNAL_BYPASS; 		int d14 = SIGNAL_BYPASS; 		int d15 = SIGNAL_BYPASS;
-	//};
+	/// <summary>
+	/// Point Class
+	/// </summary>
 
 	class POINT_DECLSPEC Point
 	{
@@ -443,6 +443,10 @@ namespace rb {
 
 	};
 
+	/// <summary>
+	/// Joint Class
+	/// </summary>
+
 	class JOINT_DECLSPEC Joint
 	{
 	private:
@@ -459,6 +463,7 @@ namespace rb {
 		float rx_ = 0.f;
 		float ry_ = 0.f;
 		float rz_ = 0.f;
+
 	public:
 		Joint() {}
 		Joint(const float j0, const float j1, const float j2, const float j3, const float j4, const float j5);
@@ -479,6 +484,10 @@ namespace rb {
 		inline float J5() { return j5_; }
 	};
 
+	/// <summary>
+	/// Cobot Class
+	/// </summary>	
+
 	class COBOT_DECLSPEC Cobot
 	{
 	public:
@@ -487,12 +496,11 @@ namespace rb {
 
 		//제어박스와 통신 연결
 		bool ConnectToCB(string ip="10.0.2.7");
-		//bool ConnectToCMD(string ip = "10.0.2.7");
-		//bool ConnectToData(string ip = "10.0.2.7");
 
 		//제어박스와 통신 끊기
 		bool DisConnectToCB();
 
+		//API Version 체크
 		string __Version();
 
 		//협동로봇 초기화
@@ -564,17 +572,8 @@ namespace rb {
 		bool MoveCircle_Axis(Point p1, CIRCLE_AXIS axis, float angle, float spd, float acc, CIRCLE_TYPE type);		
 
 		//제어박스 디지털 출력
-		//bool ControlBoxDigitalOut(DOUT_PORT port);
-		//bool ControlBoxDigitalOut(int d0, int d1, int d2, int d3, int d4, int d5, int d6, int d7, int d8, int d9, int d10, int d11, int d12, int d13, int d14, int d15);
-
 		bool CBDigitalOut(float port, DOUT_SET type);
 		bool CBAnalogOut(float port, float volt);
-		
-		//제어박스 아날로그 출력
-		//bool ControlBoxAnalogOut(float a0, float a1, float a2, float a3);
-
-		//툴플렌지 출력
-		//bool ToolDigitalOut(int d0, int d1, DOUT_VOLT volt);
 
 		//로봇팔 전원 차단
 		bool RobotPowerDown(void);
@@ -605,6 +604,9 @@ namespace rb {
 
 		//협동로봇 현재 상태
 		COBOT_STATUS GetCurrentCobotStatus();
+
+		//명령어 송신
+		bool SendCOMMAND(string str, CMD_TYPE cmd_type);
 		
 	private:
 		void ReadCmd();
@@ -653,7 +655,4 @@ namespace rb {
 		thread proc3;
 	};
 }
-
-
-
 #endif
