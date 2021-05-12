@@ -45,7 +45,6 @@ namespace rb {
 		inline float J3() { return j3_; }
 		inline float J4() { return j4_; }
 		inline float J5() { return j5_; }
-
 	};
 }
 

@@ -1557,3 +1557,87 @@ bool Cobot::socketDataClose() {
 	return closesocket(DATA_CLIENT_FD_);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Point::Point(const float x, const float y, const float z, const float rx, const float ry, const float rz) {
+	x_ = x;
+	y_ = y;
+	z_ = z;
+	rx_ = rx;
+	ry_ = ry;
+	rz_ = rz;
+}
+
+//Point Point::operator + (Point& p) {
+//	x_ = x_ + p.x_;
+//	y_ = y_ + p.y_;
+//	z_ = z_ + p.z_;
+//	rx_ = rx_ + p.rx_;
+//	ry_ = ry_ + p.ry_;
+//	rz_ = rz_ + p.rz_;
+//	return Point(x_, y_, z_, rx_, ry_, rz_);
+//}
+
+
+void Point::operator () (Point p) {
+	x_ = p.x_;
+	y_ = p.y_;
+	z_ = p.z_;
+	rx_ = p.rx_;
+	ry_ = p.ry_;
+	rz_ = p.rz_;
+}
+
+void Point::operator () (const float x, const float y, const float z, const float rx, const float ry, const float rz) {
+	x_ = x;
+	y_ = y;
+	z_ = z;
+	rx_ = rx;
+	ry_ = ry;
+	rz_ = rz;
+}
+
+
+Point::~Point() {
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Joint::Joint(const float j0, const float j1, const float j2, const float j3, const float j4, const float j5) {
+	j0_ = j0;
+	j1_ = j1;
+	j2_ = j2;
+	j3_ = j3;
+	j4_ = j4;
+	j5_ = j5;
+}
+
+Joint Joint::operator + (const Joint& j) {
+	float j_result0 = j0_ + j.j0_;
+	float j_result1 = j1_ + j.j1_;
+	float j_result2 = j2_ + j.j2_;
+	float j_result3 = j3_ + j.j3_;
+	float j_result4 = j4_ + j.j4_;
+	float j_result5 = j5_ + j.j5_;
+	return Joint(j_result0, j_result1, j_result2, j_result3, j_result4, j_result5);
+}
+
+Joint Joint::operator - (const Joint& j) {
+	float j_result0 = j0_ - j.j0_;
+	float j_result1 = j1_ - j.j1_;
+	float j_result2 = j2_ - j.j2_;
+	float j_result3 = j3_ - j.j3_;
+	float j_result4 = j4_ - j.j4_;
+	float j_result5 = j5_ - j.j5_;
+	return Joint(j_result0, j_result1, j_result2, j_result3, j_result4, j_result5);
+}
+
+Joint::~Joint() {
+
+}
