@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "rb-joint.h"
+#include "rb-cobot.h"
 
 using namespace rb;
 
