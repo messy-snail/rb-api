@@ -275,15 +275,6 @@ bool Cobot::MovePB_Run(float acc, BLEND_RTYPE type) {
 bool Cobot::MoveITPL_Clear() {
 	string msg = "move_itpl_clear() ";
 
-	//if (!WSAGetLastError()) {
-	//	send(CMD_CLIENT_FD_, msg.c_str(), msg.length(), 0);
-	//	cout << msg << endl;
-	//	cmdConfirmFlag = false;
-	//	return true;
-	//}
-	//else {
-	//	return false;
-	//}
 	return SendCOMMAND(msg, CMD_TYPE::NONMOVE);
 }
 
@@ -526,30 +517,6 @@ bool Cobot::ManualScript(string ex_msg) {
 	return SendCOMMAND(msg, CMD_TYPE::NONMOVE);
 }
 
-
-//void Cobot::ReadCmd() {
-//	char buffer[PACKET_SIZE] = {}; //char 생성
-//	string cmd; //string 생성
-//	cout << "WSAGetLastError(): " << WSAGetLastError() << endl;
-//	while (!WSAGetLastError()) {
-//		ZeroMemory(&buffer, PACKET_SIZE); //buffer 비우기
-//		//ioctlsocket()
-//		recv(CMD_CLIENT_FD_, buffer, PACKET_SIZE, 0); //데이터받아오기
-//		cmd = buffer; //buffer의값이 cmd에 들어갑니다
-//		cout << "[cmd]" << cmd << endl;
-//		if (cmd.compare("The command was executed\n") == 0) {
-//			cmdConfirmFlag = true;
-//			if (moveCmdFlag == true) {
-//				moveCmdCnt = 4;
-//				systemStat.sdata.robot_state = 3;
-//				moveCmdFlag = false;
-//			}
-//			cout << "moveCmdFlag: " << boolalpha << moveCmdFlag << endl;
-//		}
-//	}	
-//	cout << "WSAGetLastError(): " << WSAGetLastError() << endl;	
-//}
-
 void Cobot::ReadCmd() {
 	
 	while (true) {
@@ -641,8 +608,10 @@ void Cobot::ReadData() {
 				int size = (int(unsigned char(recv_buf_[2]) << 8) | int(unsigned char(recv_buf_[1])));
 				if (size <= recv_buf_.size() - 4)
 				{
+					cout << size << endl;
 					//int templen = recv_buf_.size();
 					if (3 == recv_buf_[3]) {
+						cout << "stat" << endl;
 						if (moveCmdCnt > 0) {
 							moveCmdCnt--;
 						}
@@ -656,6 +625,7 @@ void Cobot::ReadData() {
 					}
 					else if (4 == recv_buf_[3]) {
 						tempSize = sizeof(systemCONFIG) <= size ? sizeof(systemCONFIG) : size;
+						cout << "config" << endl;
 						memcpy(&systemConfig, recv_buf_.data(), tempSize);
 						for (int i = 0; i < size + 4; i++) {
 							recv_buf_.erase(recv_buf_.begin());
@@ -663,6 +633,7 @@ void Cobot::ReadData() {
 
 					}
 					else if (10 == recv_buf_[3]) {
+						cout << "popup" << endl;
 						tempSize = sizeof(systemPopup) <= size ? sizeof(systemPopup) : size;
 						memcpy(&systemPopup, recv_buf_.data(), tempSize);
 						for (int i = 0; i < size + 4; i++) {
