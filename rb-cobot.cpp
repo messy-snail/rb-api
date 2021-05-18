@@ -711,7 +711,7 @@ bool Cobot::IsRobotReal() {
 bool Cobot::IsCommandSockConnect() {
 	
 	string status;
-	if (data_conneted == true) {
+	if (cmd_conneted == true) {
 		status = "Command Connected";
 		cout << status << endl;
 		return true;
