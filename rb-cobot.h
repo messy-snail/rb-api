@@ -568,8 +568,8 @@ namespace rb {
 		//원 동작
 		bool MoveCircle_ThreePoint(float x1, float y1, float z1, float rx1, float ry1, float rz1, float x2, float y2, float z2, float rx2, float ry2, float rz2, float spd, float acc, CIRCLE_TYPE type);
 		bool MoveCircle_ThreePoint(Point p1, Point p2, float spd, float acc, CIRCLE_TYPE type);
-		bool MoveCircle_Axis(float x1, float y1, float z1, float rx1, float ry1, float rz1, CIRCLE_AXIS axis, float angle, float spd, float acc, CIRCLE_TYPE type);
-		bool MoveCircle_Axis(Point p1, CIRCLE_AXIS axis, float angle, float spd, float acc, CIRCLE_TYPE type);		
+		bool MoveCircle_Axis(float x1, float y1, float z1, float rx1, float ry1, float rz1, CIRCLE_AXIS axis, float direction, float angle, float spd, float acc, CIRCLE_TYPE type);
+		bool MoveCircle_Axis(Point p1, CIRCLE_AXIS axis, float direction, float angle, float spd, float acc, CIRCLE_TYPE type);
 
 		//제어박스 디지털 출력
 		bool CBDigitalOut(float port, DOUT_SET type);

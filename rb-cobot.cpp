@@ -357,7 +357,7 @@ bool Cobot::MoveCircle_ThreePoint(Point p1, Point p2, float spd, float acc, CIRC
 	return SendCOMMAND(msg, CMD_TYPE::MOVE);
 }
 
-bool Cobot::MoveCircle_Axis(float x1, float y1, float z1, float rx1, float ry1, float rz1, CIRCLE_AXIS axis, float angle, float spd, float acc, CIRCLE_TYPE type)
+bool Cobot::MoveCircle_Axis(float x1, float y1, float z1, float rx1, float ry1, float rz1, CIRCLE_AXIS axis, float direction, float angle, float spd, float acc, CIRCLE_TYPE type)
 {
 	float r_option;
 	string a_option;
@@ -372,13 +372,28 @@ bool Cobot::MoveCircle_Axis(float x1, float y1, float z1, float rx1, float ry1, 
 	}
 
 	if (axis == CIRCLE_AXIS::X) {
-		a_option = "1,0,0";
+		if(direction == 1)
+			a_option = "1,0,0";
+		else if(direction == -1)
+			a_option = "-1,0,0";
+		else
+			a_option = "1,0,0";
 	}
 	else if (axis == CIRCLE_AXIS::Y) {
-		a_option = "0,1,0";
+		if (direction == 1)
+			a_option = "0,1,0";
+		else if (direction == -1)
+			a_option = "0,-1,0";
+		else
+			a_option = "1,0,0";
 	}
 	else if (axis == CIRCLE_AXIS::Z) {
-		a_option = "0,0,1";
+		if (direction == 1)
+			a_option = "0,0,1";
+		else if (direction == -1)
+			a_option = "0,0,-1";
+		else
+			a_option = "1,0,0";
 	}
 	else
 		cout << "axis_error";
@@ -393,7 +408,7 @@ bool Cobot::MoveCircle_Axis(float x1, float y1, float z1, float rx1, float ry1, 
 	return SendCOMMAND(msg, CMD_TYPE::MOVE);
 }
 
-bool Cobot::MoveCircle_Axis(Point p1, CIRCLE_AXIS axis, float angle, float spd, float acc, CIRCLE_TYPE type)
+bool Cobot::MoveCircle_Axis(Point p1, CIRCLE_AXIS axis, float direction, float angle, float spd, float acc, CIRCLE_TYPE type)
 {
 	float r_option;
 	string a_option;
@@ -408,13 +423,28 @@ bool Cobot::MoveCircle_Axis(Point p1, CIRCLE_AXIS axis, float angle, float spd, 
 	}
 
 	if (axis == CIRCLE_AXIS::X) {
-		a_option = "1,0,0";
+		if (direction == 1)
+			a_option = "1,0,0";
+		else if (direction == -1)
+			a_option = "-1,0,0";
+		else
+			a_option = "1,0,0";
 	}
 	else if (axis == CIRCLE_AXIS::Y) {
-		a_option = "0,1,0";
+		if (direction == 1)
+			a_option = "0,1,0";
+		else if (direction == -1)
+			a_option = "0,-1,0";
+		else
+			a_option = "1,0,0";
 	}
 	else if (axis == CIRCLE_AXIS::Z) {
-		a_option = "0,0,1";
+		if (direction == 1)
+			a_option = "0,0,1";
+		else if (direction == -1)
+			a_option = "0,0,-1";
+		else
+			a_option = "1,0,0";
 	}
 	else
 		cout << "axis_error";
