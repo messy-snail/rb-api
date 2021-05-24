@@ -473,7 +473,7 @@ bool Cobot::CBDigitalOut(float port, DOUT_SET type) {
 		return false;
 
 	std::stringstream oss;
-	oss << "set_box_dout(" << port << dtype << ") ";
+	oss << "set_box_dout(" << port << "," << dtype << ") ";
 
 	string msg = oss.str();
 
@@ -490,7 +490,7 @@ bool Cobot::CBAnalogOut(float port, float volt) {
 		return false;
 
 	std::stringstream oss;
-	oss << "set_box_aout(" << port << volt << ") ";
+	oss << "set_box_aout(" << port <<","<< volt << ") ";
 
 	string msg = oss.str();
 
