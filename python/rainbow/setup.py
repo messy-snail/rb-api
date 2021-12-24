@@ -5,13 +5,13 @@ with open("ReadME.md", "rt") as fh:
 
 setuptools.setup(
     name="rb-api-python",
-    version="0.0.3",
+    version="0.0.5",
     author="Hansol Kang, Hyojoon Lee",
     author_email="hskang@rainbow-robotics.com, hyojoon_lee04@rainbow-robotics.com",
     description="Python wrapper for rarinbow robotics cobot",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/messy-snail/rb-api/python",
+    url="https://github.com/messy-snail/rb-api/",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

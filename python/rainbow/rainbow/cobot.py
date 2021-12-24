@@ -151,7 +151,7 @@ moveCmdFlag = False
 moveCmdCnt = 0
 cmd_send_flag = 0  # read cmd에서 사용하기 위한 flag
 
-__RB_VERSION__ = '0.0.3'
+__RB_VERSION__ = '0.0.5'
 
 
 def ConnectToCB(ip):

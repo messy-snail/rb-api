@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: rb-api-python
-Version: 0.0.3
+Version: 0.0.5
 Summary: Python wrapper for rarinbow robotics cobot
-Home-page: https://github.com/messy-snail/rb-api/python
+Home-page: https://github.com/messy-snail/rb-api/
 Author: Hansol Kang, Hyojoon Lee
 Author-email: hskang@rainbow-robotics.com, hyojoon_lee04@rainbow-robotics.com
 License: UNKNOWN
