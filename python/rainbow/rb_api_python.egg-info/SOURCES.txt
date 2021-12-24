@@ -1,0 +1,7 @@
+setup.py
+rainbow/__init__.py
+rainbow/cobot.py
+rb_api_python.egg-info/PKG-INFO
+rb_api_python.egg-info/SOURCES.txt
+rb_api_python.egg-info/dependency_links.txt
+rb_api_python.egg-info/top_level.txt
